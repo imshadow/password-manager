@@ -27,3 +27,8 @@ CREATE TABLE `password_type`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+INSERT INTO `pm`.`password_type`(`id`, `typeName`) VALUES (1, 'APP');
+INSERT INTO `pm`.`password_type`(`id`, `typeName`) VALUES (2, '网站');
+INSERT INTO `pm`.`password_type`(`id`, `typeName`) VALUES (3, '服务器软件');
+INSERT INTO `pm`.`password_type`(`id`, `typeName`) VALUES (4, '其他');
