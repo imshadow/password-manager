@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="https://www.layuicdn.com/layui/css/layui.css" />
+    <title>密码管理器</title>
+</head>
+
+<body>
+
+    <!--导航栏start-->
+    <ul class="layui-nav" lay-filter="">
+        <li class="layui-nav-item layui-this">
+            <a href="">
+                <i class="layui-icon layui-icon-util"></i>
+                密码管理器
+            </a>
+        </li>
+    </ul>
+    <!--导航栏end-->
+
+    <!--数据表格start-->
+    <table id="demo" lay-filter="test"></table>
+    <!--数据表格end-->
+
+    <blockquote class="layui-elem-quote">
+        注：数据库不会保存密码的明文，也不会保存解密秘钥，只会保存密码的密文，请牢记秘钥，否则将无法解密密码！
+    </blockquote>
+
+</body>
+
+<!--弹出层start-->
+
+<!--添加密码表单start-->
+<div id="addForm" style="display: none; padding: 20px 50px 20px 0">
+    <form class="layui-form" action="" lay-filter="addForm">
+        <div class="layui-form-item">
+            <label class="layui-form-label">名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="title" required lay-verify="required" placeholder="请输入名称" autocomplete="off"
+                    class="layui-input" value="">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">类型</label>
+            <div class="layui-input-block">
+                <select name="typeId" lay-verify="required">
+                    <option value="4">其他</option>
+                    <option value="1">APP</option>
+                    <option value="2">网站</option>
+                    <option value="3">服务器软件</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-block">
+                <input type="text" name="username" placeholder="用户名(非必填)" autocomplete="off" class="layui-input"
+                    value="">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">密码</label>
+            <div class="layui-input-block">
+                <input type="text" name="password" placeholder="密码(非必填)" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">秘钥</label>
+            <div class="layui-input-inline">
+                <input type="text" name="key" required lay-verify="required" placeholder="请输入秘钥" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">用于密码的加解密，只支持字母和数字，请牢记</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">地址</label>
+            <div class="layui-input-block">
+                <input type="text" name="host" placeholder="网址或服务器IP地址(非必填)" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">端口</label>
+            <div class="layui-input-block">
+                <input type="text" name="port" placeholder="端口(非必填)" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item" style="text-align: right;">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="addForm">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+<!--添加密码表单end-->
+
+<!--修改密码表单start-->
+<div id="updateForm" style="display: none; padding: 20px 50px 20px 0">
+    <form class="layui-form" action="" lay-filter="updateForm">
+        <input type="hidden" name="id" value="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="title" required lay-verify="required" placeholder="请输入名称" autocomplete="off"
+                       class="layui-input" value="">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">类型</label>
+            <div class="layui-input-block">
+                <select name="typeId" lay-verify="required">
+                    <option value="4">其他</option>
+                    <option value="1">APP</option>
+                    <option value="2">网站</option>
+                    <option value="3">服务器软件</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-block">
+                <input type="text" name="username" placeholder="用户名(非必填)" autocomplete="off" class="layui-input"
+                       value="">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">密码</label>
+            <div class="layui-input-block">
+                <input type="text" name="password" placeholder="密码(非必填)" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">秘钥</label>
+            <div class="layui-input-inline">
+                <input type="text" name="key" required lay-verify="required" placeholder="请输入秘钥" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">输入正确的秘钥才能修改</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">地址</label>
+            <div class="layui-input-block">
+                <input type="text" name="host" placeholder="网址或服务器IP地址(非必填)" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">端口</label>
+            <div class="layui-input-block">
+                <input type="text" name="port" placeholder="端口(非必填)" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item" style="text-align: right;">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="updateForm">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+<!--修改密码表单end-->
+
+<!--查看密码表单start-->
+<div id="detailForm" style="display: none; padding: 20px 50px 20px 0">
+    <form class="layui-form" action="" lay-filter="detailForm">
+        <div class="layui-form-item">
+            <label class="layui-form-label">名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="title" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">类型</label>
+            <div class="layui-input-block">
+                <select name="typeId">
+                    <option value="4">其他</option>
+                    <option value="1">APP</option>
+                    <option value="2">网站</option>
+                    <option value="3">服务器软件</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-block">
+                <input type="text" name="username" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">密码</label>
+            <div class="layui-input-block">
+                <input type="text" name="password" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">地址</label>
+            <div class="layui-input-block">
+                <input type="text" name="host" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">端口</label>
+            <div class="layui-input-block">
+                <input type="text" name="port" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </form>
+</div>
+<!--查看密码表单end-->
+
+<!--查询明文密码列表，解密秘钥表单start-->
+<div id="keyForm" style="display: none; padding: 20px 50px 20px 0">
+    <form class="layui-form" action="" lay-filter="keyForm">
+        <div class="layui-form-item">
+            <label class="layui-form-label">秘钥</label>
+            <div class="layui-input-block">
+                <input type="text" name="key" required lay-verify="required" placeholder="请输入秘钥" autocomplete="off"
+                    class="layui-input" value="">
+            </div>
+        </div>
+        <div class="layui-form-item" style="text-align: right;">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="keyForm">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+<!--查询明文密码列表，解密秘钥表单end-->
+
+<!--查询单个明文密码，解密秘钥表单start-->
+<div id="oneKeyForm" style="display: none; padding: 20px 50px 20px 0">
+    <form class="layui-form" action="" lay-filter="oneKeyForm">
+        <div class="layui-form-item">
+            <label class="layui-form-label">秘钥</label>
+            <div class="layui-input-block">
+                <input type="text" name="key" required lay-verify="required" placeholder="请输入秘钥" autocomplete="off"
+                    class="layui-input" value="">
+            </div>
+        </div>
+        <div class="layui-form-item" style="text-align: right;">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="oneKeyForm">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+<!--查询单个明文密码，解密秘钥表单end-->
+
+<!--删除密码，解密秘钥表单start-->
+<div id="deleteKeyForm" style="display: none; padding: 20px 50px 20px 0">
+    <form class="layui-form" action="" lay-filter="deleteKeyForm">
+        <div class="layui-form-item">
+            <label class="layui-form-label">秘钥</label>
+            <div class="layui-input-block">
+                <input type="text" name="key" required lay-verify="required" placeholder="请输入秘钥" autocomplete="off"
+                       class="layui-input" value="">
+            </div>
+        </div>
+        <div class="layui-form-item" style="text-align: right;">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="deleteKeyForm">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+<!--删除密码，解密秘钥表单end-->
+
+<!--弹出层end-->
+
+<!--引入layui.js start-->
+<script src="https://www.layuicdn.com/layui/layui.js"></script>
+<!--引入layui.js end-->
+
+<!--table template start-->
+
+<!--表格行内工具栏start-->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<!--表格行内工具栏end-->
+
+<!--表格头部工具栏start-->
+<script type="text/html" id="myToolBar">
+    <form class="layui-form layui-form-pane" action="" lay-filter="myForm">
+        <div class="layui-inline">
+            <label class="layui-form-label" style="width: 150px;">网站/APP 名称</label>
+            <div class="layui-input-inline" style="width: 180px;">
+              <input type="text" name="title" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline" style="margin-left: 20px;">
+            <label class="layui-form-label" style="width: 120px;">用户名</label>
+            <div class="layui-input-inline" style="width: 180px;">
+              <input type="text" name="username" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline" style="margin-left: 20px;">
+            <label class="layui-form-label">类型</label>
+            <div class="layui-input-inline" style="width: 120px;">
+              <select name="typeId">
+                <option value=""></option>
+                <option value="1">APP</option>
+                <option value="2">网站</option>
+                <option value="3">服务器软件</option>
+                <option value="4">其他</option>
+              </select>
+            </div>
+        </div>
+        <div class="layui-inline" style="margin-left: 20px;">
+            <div class="layui-btn-container">
+              <button class="layui-btn layui-btn-primary layui-border-blue" lay-event="queryEncrypt">查询</button>
+              <button class="layui-btn layui-btn-primary layui-border-blue" lay-event="query">明文查询</button>
+              <button class="layui-btn layui-btn-primary layui-border-green" lay-event="add">添加</button>
+            </div>
+        </div>
+    </form>
+</script>
+<!--表格头部工具栏end-->
+
+<!--table template end-->
+
+
+<!--js逻辑代码start-->
+<script type="text/javascript">
+    layui.use(['laydate', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element', 'form'], function () {
+        var laydate = layui.laydate //日期
+            , laypage = layui.laypage //分页
+            , layer = layui.layer //弹层
+            , table = layui.table //表格
+            , carousel = layui.carousel //轮播
+            , upload = layui.upload //上传
+            , element = layui.element //元素操作 等等...
+            , form = layui.form //表单
+            , $ = layui.$; //jquery
+
+        //表格渲染
+        function renderTable(data) {
+            table.render({
+                elem: '#demo'
+                , toolbar: '#myToolBar'
+                , height: 600
+                , data: data //数据
+                , page: true //开启分页
+                , cols: [[ //表头
+                    { field: 'id', title: 'ID', align: 'center' }
+                    , { field: 'title', title: '名称', align: 'center' }
+                    , { field: 'typeName', title: '类型', align: 'center' }
+                    , { field: 'username', title: '用户名', align: 'center' }
+                    , { field: 'passwordEncrypt', title: '密码(密文)', align: 'center' }
+                    , { field: 'password', title: '密码(明文)', align: 'center' }
+                    , { field: 'host', title: '地址', align: 'center' }
+                    , { field: 'port', title: '端口', align: 'center' }
+                    , { fixed: 'right', title: '操作', align: 'center', toolbar: '#barDemo' }
+                ]]
+            });
+        }
+
+        //加载表格数据(未解密)
+        function loadTableData() {
+            var data = form.val("myForm");
+            $.post({
+                url: "/encryptPasswords", data, success: function (res) {
+                    renderTable(res.data);
+                }
+            });
+        }
+
+        //加载数据
+        loadTableData();
+
+        //监听表格头部工具栏事件
+        table.on('toolbar(test)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                case 'add':
+                    showAdd();
+                    break;
+                case 'query':
+                    query();
+                    break;
+                case 'queryEncrypt':
+                    queryEncrypt();
+                    break;
+            };
+            return false;
+        });
+
+        var dialogIndex;
+        var currentId;
+
+        //显示添加数据表单框
+        function showAdd() {
+            dialogIndex = layer.open({
+                type: 1,
+                title: '添加密码数据',
+                content: $('#addForm')
+            });
+        }
+
+        //显示修改数据表单框
+        function showUpdate(data) {
+            data.password = '';
+            form.val("updateForm", data);
+            dialogIndex = layer.open({
+                type: 1,
+                title: '修改密码数据',
+                content: $('#updateForm')
+            });
+        }
+
+        //查询密码列表(并解密密码)
+        function query() {
+            dialogIndex = layer.open({
+                type: 1,
+                title: '查询密码明文',
+                content: $('#keyForm')
+            });
+        }
+
+        //查询密码列表
+        function queryEncrypt() {
+            loadTableData();
+        }
+
+        //监听表格行内工具栏事件
+        table.on('tool(test)', function (obj) {
+
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event;
+
+            if (layEvent === 'detail') { //查看
+                currentId = data.id;
+                showOneKeyForm();
+            } else if (layEvent === 'del') { //删除
+                currentId = data.id;
+                showDeleteKeyForm();
+            } else if (layEvent === 'edit') { //编辑
+                //layer.msg('待完善');
+                showUpdate(data);
+            }
+
+        });
+
+        //查询单个密码
+        function showOneKeyForm() {
+            dialogIndex = layer.open({
+                type: 1,
+                title: '查询密码明文',
+                content: $('#oneKeyForm')
+            });
+        }
+
+        //查询单个密码
+        function showDeleteKeyForm() {
+            dialogIndex = layer.open({
+                type: 1,
+                title: '删除密码',
+                content: $('#deleteKeyForm')
+            });
+        }
+
+        //监听添加密码表单提交
+        form.on('submit(addForm)', function (data) {
+            //提交数据
+            $.post("/addPassword", data.field, function (res) {
+                if (res.code == 0) {
+                    layer.close(dialogIndex);
+                    layer.msg('添加成功');
+                    loadTableData();
+                }
+            });
+            return false;
+        });
+
+        //监听修改密码表单提交
+        form.on('submit(updateForm)', function (data) {
+            //提交数据
+            $.post("/updatePassword", data.field, function (res) {
+                if (res.code == 0) {
+                    layer.close(dialogIndex);
+                    layer.msg('修改成功');
+                    loadTableData();
+                } else {
+                    layer.msg(res.msg);
+                }
+            });
+            return false;
+        });
+
+        //监听查看明文密码列表的秘钥表单提交
+        form.on('submit(keyForm)', function (d) {
+            var data = form.val("myForm");
+            data['key'] = d.field.key;
+            //提交数据
+            $.post("/passwords", data, function (res) {
+                if (res.code == 0) {
+                    layer.close(dialogIndex);
+                    renderTable(res.data);
+                } else {
+                    layer.msg('解密失败');
+                }
+            });
+            return false;
+        });
+
+        //监听查看单个明文密码的秘钥表单提交
+        form.on('submit(oneKeyForm)', function (d) {
+            var data = {
+                'id': currentId,
+                'key': d.field.key
+            };
+            //提交数据
+            $.post("/detail", data, function (res) {
+                if (res.code == 0) {
+                    layer.close(dialogIndex);
+                    form.val("detailForm", res.data);
+                    dialogIndex = layer.open({
+                        type: 1,
+                        title: '密码详情',
+                        content: $('#detailForm')
+                    });
+                } else {
+                    layer.msg('解密失败');
+                }
+            });
+            return false;
+        });
+
+        //监听删除密码的秘钥表单提交
+        form.on('submit(deleteKeyForm)', function (d) {
+            var data = {
+                'id': currentId,
+                'key': d.field.key
+            };
+            //提交数据
+            $.post("/deletePassword", data, function (res) {
+                if (res.code == 0) {
+                    layer.close(dialogIndex);
+                    layer.msg('删除成功');
+                    loadTableData();
+                } else {
+                    layer.msg(res.msg);
+                }
+            });
+            return false;
+        });
+
+        //监听表格头部工具栏表单提交
+        form.on('submit(myForm)', function (data) {
+            return false;
+        });
+
+    });
+</script>
+<!--js逻辑代码end-->
+
+</html>
